@@ -1,1 +1,5 @@
-vendor
+# Composer ignores
+/vendor
+
+# Editor ignores
+.idea
