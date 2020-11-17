@@ -1,54 +1,81 @@
 <?php
+$includedDirs = [
+    __DIR__ . '/src',
+    __DIR__ . '/Tests',
+];
 
-$finder = PhpCsFixer\Finder::create()
-    ->in(__DIR__ . '/.')
-;
+$excludedDirs = [
+    __DIR__ . '/Tests/_helpers/_generated',
+];
+
+$finder = PhpCsFixer\Finder::create();
+
+foreach ($includedDirs as $dir) {
+    if (file_exists($dir) && is_dir($dir)) {
+        $finder->in($dir);
+    }
+}
+
+foreach ($excludedDirs as $dir) {
+    if (file_exists($dir) && is_dir($dir)) {
+        $finder->exclude($dir);
+    }
+}
 
 return PhpCsFixer\Config::create()
-    ->setIndent('    ')
     ->setRules([
-        '@Symfony'               => true,
-        'binary_operator_spaces' => [
-            'align_double_arrow' => true,
-            'align_equals'       => true,
+        '@PSR2'                                 => true,
+        'binary_operator_spaces'                => [
+            'operators' => [
+                '=>'  => 'align',
+                '='   => 'align',
+                '+='  => 'align',
+                '-='  => 'align',
+                '*='  => 'align',
+                '/='  => 'align',
+                '%='  => 'align',
+                '.='  => 'align',
+                '&='  => 'align',
+                '|='  => 'align',
+                '^='  => 'align',
+                '<<=' => 'align',
+                '>>=' => 'align',
+            ],
         ],
-        'declare_equal_normalize' => [
-            'space' => 'single',
-        ],
-        'phpdoc_align'                       => true,
-        'single_blank_line_before_namespace' => false,
-        'method_chaining_indentation'        => true,
-        'no_blank_lines_before_namespace'    => true,
-        'concat_space' => [
+        'phpdoc_align'                          => true,
+        'concat_space'                          => [
             'spacing' => 'one',
         ],
-        'return_type_declaration' => [
-            'space_before' => 'one',
-        ],
-        'array_syntax' => [
+        'array_syntax'                          => [
             'syntax' => 'short',
         ],
-        'ternary_to_null_coalescing'      => true,
-        'align_multiline_comment'         => true,
-        'array_indentation'               => true,
-        'combine_consecutive_issets'      => true,
-        'combine_consecutive_unsets'      => true,
-        'no_unused_imports'               => true,
-        'ordered_imports'                 => true,
-        'no_trailing_whitespace'          => true,
-        'braces'                          => true,
-        'simplified_null_return'          => false,
-        'short_scalar_cast'               => true,
-        'phpdoc_scalar'                   => true,
-        'no_leading_import_slash'         => false,
-        'phpdoc_summary'                  => false,
-        'phpdoc_separation'               => false,
-        'phpdoc_var_without_name'         => false,
-        'phpdoc_single_line_var_spacing'  => false,
-        'phpdoc_to_comment'               => false,
-        'trim_array_spaces'               => false,
+        'no_blank_lines_before_namespace'       => true,
+        'no_unused_imports'                     => true,
+        'ordered_imports'                       => true,
+        'no_trailing_whitespace'                => true,
+        'braces'                                => false,
+        'simplified_null_return'                => false,
+        'short_scalar_cast'                     => true,
+        'phpdoc_scalar'                         => true,
+        'no_leading_import_slash'               => false,
+        'phpdoc_summary'                        => false,
+        'phpdoc_separation'                     => false,
+        'no_blank_lines_after_phpdoc'           => true,
+        'no_blank_lines_after_class_opening'    => true,
+        'no_whitespace_in_blank_line'           => true,
+        'phpdoc_add_missing_param_annotation'   => true,
+        'no_whitespace_before_comma_in_array'   => true,
+        'no_trailing_comma_in_singleline_array' => true,
+        'trailing_comma_in_multiline_array'     => true,
+        'no_leading_namespace_whitespace'       => true,
+        'no_empty_comment'                      => true,
+        'no_empty_statement'                    => true,
+        'method_separation'                     => true,
+        'declare_equal_normalize'               => true,
+        'blank_line_before_return'              => true,
+        'unary_operator_spaces'                 => true,
     ])
-    ->setRiskyAllowed(false)
+    ->setRiskyAllowed(true)
     ->setUsingCache(false)
     ->setFinder($finder)
 ;

@@ -1,5 +1,4 @@
 <?php
-
 // phpcs:ignoreFile
 
 /**
@@ -16,7 +15,7 @@
  * @method void pause()
  *
  * @SuppressWarnings(PHPMD)
- */
+*/
 class ApiTester extends \Codeception\Actor
 {
     use _generated\ApiTesterActions;
