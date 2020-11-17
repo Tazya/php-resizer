@@ -1,7 +1,10 @@
 <?php
-
+// phpcs:ignoreFile
 use Codeception\Example;
 
+/**
+ * Class ApiCest
+ */
 class ApiCest
 {
     /**
@@ -9,14 +12,15 @@ class ApiCest
      *
      * @dataProvider positiveDataProvider
      *
-     * @param \ApiTester           $I
-     * @param \Codeception\Example $example
+     * @param  \ApiTester           $I
+     * @param  \Codeception\Example $example
      * @throws \ImagickException
      */
     public function positiveTest(ApiTester $I, Example $example)
     {
         $I->sendGET(
-            '/', [
+            '/',
+            [
                 'url'      => $example['url'],
                 'size'     => "{$example['height']}x{$example['width']}",
                 'cropping' => $example['cropping'],

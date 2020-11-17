@@ -2,7 +2,7 @@
 install:
 	composer install
 lint:
-	composer run-script phpcs -- --standard=data/cs-ruleset.xml public src
+	composer run-script phpcs -- --standard=data/cs-ruleset.xml public src tests
 
 ## Docker команды
 start:
