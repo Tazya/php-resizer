@@ -1,5 +1,3 @@
-# Composer ignores
-/vendor
-
-# Editor ignores
 .idea
+/vendor
+.php_cs.cache
