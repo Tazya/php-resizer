@@ -1,7 +1,7 @@
 <?php
 
-use Slim\Factory\AppFactory;
 use App\Controllers\ResizeController;
+use Slim\Factory\AppFactory;
 
 require __DIR__ . '/../vendor/autoload.php';
 

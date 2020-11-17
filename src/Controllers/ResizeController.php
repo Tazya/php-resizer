@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Controllers;
 
 use Psr\Http\Message\ResponseInterface as Response;
@@ -24,12 +23,12 @@ class ResizeController
      */
     public function __invoke(Request $request, Response $response): Response
     {
-        $rawData = $request->getQueryParams();
+        $rawData    = $request->getQueryParams();
         $validation = self::validate($rawData);
         if ($validation->fails()) {
-            $errors = $validation->errors()->all();
+            $errors     = $validation->errors()->all();
             $firstError = $errors[0];
-            $jsonError = json_encode(['error' => $firstError]);
+            $jsonError  = json_encode(['error' => $firstError]);
 
             $response->getBody()->write($jsonError);
 
@@ -65,6 +64,7 @@ class ResizeController
         ]);
 
         $validation->validate();
+
         return $validation;
     }
 }
