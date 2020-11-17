@@ -1,4 +1,5 @@
 <?php
+//@codingStandardsIgnoreStart
 // phpcs:ignoreFile
 use Codeception\Example;
 
