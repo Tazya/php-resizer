@@ -1,6 +1,7 @@
 <?php
 namespace App\Controllers;
 
+use App\Validation\Rules\SizeBetweenRule;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Rakit\Validation\Validation;
@@ -16,15 +17,18 @@ use Rakit\Validation\Validator;
 class ResizeController
 {
     /**
-     * @param Request  $request
-     * @param Response $response
+     * Производит обработку запроса на ресайз изображения,
+     * в случае успешного выполнения возварщает ответ с изображением.
      *
+     * @param  Request  $request
+     * @param  Response $response
      * @return Response
      */
     public function __invoke(Request $request, Response $response): Response
     {
         $rawData    = $request->getQueryParams();
         $validation = self::validate($rawData);
+
         if ($validation->fails()) {
             $errors     = $validation->errors()->all();
             $firstError = $errors[0];
@@ -44,23 +48,29 @@ class ResizeController
     }
 
     /**
-     * @param array $data
+     * Метод принимает массив параметров запроса, проверяет на корректность и
+     * возвращает объект содержащий информацию о валидации
      *
+     * @param  array      $data
      * @return Validation
      */
     protected static function validate(array $data): Validation
     {
         $validator = new Validator([
             'required'    => ':attribute - не указан обязательный параметр',
-            'cropping:in' => 'Значение обрезки изображения должно быть 0 или 1',
+            'cropping:in' => 'Значение обрезки изображения :attribute должно быть :allowed_values',
+        ]);
+
+        $validator->addValidator('sizeBetween', new SizeBetweenRule());
+
+        $validator->setTranslations([
+            'or' => 'или',
         ]);
 
         $validation = $validator->make($data, [
             'url'      => 'required|url',
-            'size'     => 'required',
-            'cropping' => [
-                $validator('in', ['0', '1']),
-            ],
+            'size'     => 'required|sizeBetween:256x256,1024x1024',
+            'cropping' => 'in:0,1',
         ]);
 
         $validation->validate();
