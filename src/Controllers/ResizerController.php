@@ -1,6 +1,7 @@
 <?php
 namespace App\Controllers;
 
+use App\Validation\Rules\ImageRule;
 use App\Validation\Rules\SizeBetweenRule;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -14,7 +15,7 @@ use Rakit\Validation\Validator;
  *
  * @package App\Controllers
  */
-class ResizeController
+class ResizerController
 {
     /**
      * Производит обработку запроса на ресайз изображения,
@@ -26,25 +27,22 @@ class ResizeController
      */
     public function __invoke(Request $request, Response $response): Response
     {
+        $jsonResponse = $response
+            ->withHeader('Content-Type', 'application/json; charset=utf-8');
+
         $rawData    = $request->getQueryParams();
         $validation = self::validate($rawData);
 
         if ($validation->fails()) {
-            $errors     = $validation->errors()->all();
-            $firstError = $errors[0];
-            $jsonError  = json_encode(['error' => $firstError]);
+            $jsonResponse->getBody()->write(self::makeErrorMessage($validation));
 
-            $response->getBody()->write($jsonError);
-
-            return $response
-                ->withHeader('Content-Type', 'application/json; charset=utf-8');
+            return $jsonResponse->withStatus(400);
         }
 
         $payload = json_encode(['status' => 'ok', 'message' => 'Kolesa Academy!']);
-        $response->getBody()->write($payload);
+        $jsonResponse->getBody()->write($payload);
 
-        return $response
-            ->withHeader('Content-Type', 'application/json; charset=utf-8');
+        return $jsonResponse;
     }
 
     /**
@@ -61,6 +59,7 @@ class ResizeController
             'cropping:in' => 'Значение обрезки изображения :attribute должно быть :allowed_values',
         ]);
 
+        $validator->addValidator('image', new ImageRule());
         $validator->addValidator('sizeBetween', new SizeBetweenRule());
 
         $validator->setTranslations([
@@ -68,7 +67,11 @@ class ResizeController
         ]);
 
         $validation = $validator->make($data, [
-            'url'      => 'required|url',
+            'url'      => [
+                'required',
+                'url',
+                $validator('image', ['jpg', 'jpeg'])->maxSize('2048x2048'),
+            ],
             'size'     => 'required|sizeBetween:256x256,1024x1024',
             'cropping' => 'in:0,1',
         ]);
@@ -76,5 +79,20 @@ class ResizeController
         $validation->validate();
 
         return $validation;
+    }
+
+    /**
+     * Принимает объект валидации и возвращает первую из ошибок
+     * в формате json
+     *
+     * @param  Validation $validation
+     * @return string
+     */
+    protected static function makeErrorMessage(Validation $validation): string
+    {
+        $errors     = $validation->errors()->all();
+        $firstError = $errors[0];
+
+        return json_encode(['error' => $firstError]);
     }
 }

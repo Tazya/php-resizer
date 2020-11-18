@@ -5,19 +5,30 @@ use Rakit\Validation\Rule;
 
 /**
  * Класс правила валидации для параметра size.
+ * Расширяет класс Rule и делает доступным новое правило валидации: соответствие
+ * значениям минимальных и максимальных резрешений.
+ * Значения выставляются в формате '256x256' (высота х ширина).
  *
  * @package App\Validation\Rules
  */
 class SizeBetweenRule extends Rule
 {
-    /** @var string */
+    /**
+     * Сообщение для вывода в списке ошибок валидатора.
+     *
+     * @var string
+     */
     protected $message = "Размер :attribute должен быть между :min и :max";
 
-    /** @var array */
+    /**
+     * Список передаваемых параметров при использовании правила в валидаторе.
+     *
+     * @var array
+     */
     protected $fillableParams = ['min', 'max'];
 
     /**
-     * Производит проверку размера для ресайза
+     * Производит проверку размера для ресайза.
      *
      * @param  mixed $value
      * @return bool
@@ -26,11 +37,11 @@ class SizeBetweenRule extends Rule
     {
         $this->requireParameters($this->fillableParams);
 
-        $minParameter = $this->parameter('min');
-        $maxParameter = $this->parameter('max');
+        $minSize = $this->parameter('min');
+        $maxSize = $this->parameter('max');
 
-        [$minHeight, $minWidth] = explode('x', $minParameter);
-        [$maxHeight, $maxWidth] = explode('x', $maxParameter);
+        [$minHeight, $minWidth] = explode('x', $minSize);
+        [$maxHeight, $maxWidth] = explode('x', $maxSize);
 
         [$height, $width] = explode('x', $value);
 
