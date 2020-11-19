@@ -66,11 +66,11 @@ class ApiCest
     {
         return [
             [
-                'get'   => '/?size=1024x1024&croping=3',
+                'get'   => '/?size=1024x1024&cropping=3',
                 'error' => 'url',
             ],
             [
-                'get'   => '/?size=2049x1024&croping=0&url=https%3A%2F%2Fwww.google.com%2F',
+                'get'   => '/?size=2049x1024&cropping=0&url=https%3A%2F%2Fwww.google.com%2F',
                 'error' => 'url',
             ],
             [
@@ -81,28 +81,28 @@ class ApiCest
             ],
             [
                 'get'   =>
-                    '/?url=https%3A%2F%2Fjob.kolesa.kz%2Ffiles%2F000%2F000%2F_XUou011.jpg&size=1025x1024&croping=0',
+                    '/?url=https%3A%2F%2Fjob.kolesa.kz%2Ffiles%2F000%2F000%2F_XUou011.jpg&size=1025x1024&cropping=0',
                 'error' => 'size',
             ],
             [
                 'get'   =>
-                    '/?url=https%3A%2F%2Fjob.kolesa.kz%2Ffiles%2F000%2F000%2F_XUou011.jpg&size=256x255&croping=0',
+                    '/?url=https%3A%2F%2Fjob.kolesa.kz%2Ffiles%2F000%2F000%2F_XUou011.jpg&size=256x255&cropping=0',
                 'error' => 'size',
             ],
             [
                 'get'   =>
-                    '/?url=https%3A%2F%2Fjob.kolesa.kz%2Ffiles%2F000%2F000%2F_XUou011.jpg&size=256,256&croping=0',
+                    '/?url=https%3A%2F%2Fjob.kolesa.kz%2Ffiles%2F000%2F000%2F_XUou011.jpg&size=256,256&cropping=0',
                 'error' => 'size',
             ],
             [
                 'get'   =>
-                    '/?url=https%3A%2F%2Fjob.kolesa.kz%2Ffiles%2F000%2F000%2F_XUou011.jpg&size=1024x1024&croping=3',
-                'error' => 'croping',
+                    '/?url=https%3A%2F%2Fjob.kolesa.kz%2Ffiles%2F000%2F000%2F_XUou011.jpg&size=1024x1024&cropping=3',
+                'error' => 'cropping',
             ],
             [
                 'get'   =>
-                    '/?url=https%3A%2F%2Fjob.kolesa.kz%2Ffiles%2F000%2F000%2F_XUou011.jpg&size=1024x1024&croping=-1',
-                'error' => 'croping',
+                    '/?url=https%3A%2F%2Fjob.kolesa.kz%2Ffiles%2F000%2F000%2F_XUou011.jpg&size=1024x1024&cropping=-1',
+                'error' => 'cropping',
             ],
         ];
     }
