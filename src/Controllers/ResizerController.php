@@ -60,8 +60,13 @@ class ResizerController
     protected static function validate(array $data): Validation
     {
         $validator = new Validator([
-            'required'    => ':attribute - не указан обязательный параметр',
-            'cropping:in' => 'Значение обрезки изображения :attribute должно быть :allowed_values',
+            'url:required'     => 'url - не указан обязательный параметр',
+            'url:url'          => 'url - должен быть валидным адресом',
+            'url:image'        => 'url - размер изображения должен быть меньше :max_size. ' .
+                'Разрешенные типы файла - :allowed_types',
+            'size:required'    => 'size - не указан обязательный параметр',
+            'size:sizeBetween' => 'size - размер должен быть между :min и :max в формате 512x512 (высота x ширина)',
+            'cropping:in'      => 'cropping - Значение обрезки изображения должно быть :allowed_values',
         ]);
 
         $validator->addValidator('image', new ImageRule());
@@ -72,11 +77,7 @@ class ResizerController
         ]);
 
         $validation = $validator->make($data, [
-            'url'      => [
-                'required',
-                'url',
-                $validator('image', ['jpg', 'jpeg'])->maxSize('2048x2048'),
-            ],
+            'url'      => 'required|url|image:jpg,jpeg',
             'size'     => 'required|sizeBetween:256x256,1024x1024',
             'cropping' => 'in:0,1',
         ]);

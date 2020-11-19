@@ -18,7 +18,7 @@ class SizeBetweenRule extends Rule
      *
      * @var string
      */
-    protected $message = "Размер :attribute должен быть между :min и :max";
+    protected $message = "Размер :attribute должен быть между :min и :max в формате 512x512 (высота x ширина)";
 
     /**
      * Список передаваемых параметров при использовании правила в валидаторе.
@@ -28,7 +28,7 @@ class SizeBetweenRule extends Rule
     protected $fillableParams = ['min', 'max'];
 
     /**
-     * Производит проверку размера для ресайза.
+     * Производит проверку формата высоты и ширины, разделителя и размера для ресайза.
      *
      * @param  mixed $value
      * @return bool
@@ -37,13 +37,30 @@ class SizeBetweenRule extends Rule
     {
         $this->requireParameters($this->fillableParams);
 
+        // Проверка на разделитель
+        if (strpos($value, 'x') === false) {
+            return false;
+        }
+
+        $sizes = explode('x', $value);
+
+        // Проверка количества параметров
+        if (count($sizes) !== 2) {
+            return false;
+        }
+
+        [$height, $width] = $sizes;
+
+        // Проверка на то, что высота и ширина являются числами
+        if (!is_numeric($height) || !is_numeric($width)) {
+            return false;
+        }
+
         $minSize = $this->parameter('min');
         $maxSize = $this->parameter('max');
 
         [$minHeight, $minWidth] = explode('x', $minSize);
         [$maxHeight, $maxWidth] = explode('x', $maxSize);
-
-        [$height, $width] = explode('x', $value);
 
         $isHeightCorrect = ((int) $height >= (int) $minHeight) && ((int) $height <= (int) $maxHeight);
         $isWidthCorrect  = ((int) $width >= (int) $minWidth) && ((int) $width <= (int) $maxWidth);
