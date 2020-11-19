@@ -1,6 +1,7 @@
 <?php
 namespace App\Controllers;
 
+use App\Resizer;
 use App\Validation\Rules\ImageRule;
 use App\Validation\Rules\SizeBetweenRule;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -27,22 +28,26 @@ class ResizerController
      */
     public function __invoke(Request $request, Response $response): Response
     {
-        $jsonResponse = $response
-            ->withHeader('Content-Type', 'application/json; charset=utf-8');
-
         $rawData    = $request->getQueryParams();
         $validation = self::validate($rawData);
 
         if ($validation->fails()) {
-            $jsonResponse->getBody()->write(self::makeErrorMessage($validation));
+            $response->getBody()->write(self::makeErrorMessage($validation));
 
-            return $jsonResponse->withStatus(400);
+            return $response->withHeader('Content-Type', 'application/json; charset=utf-8')
+                ->withStatus(400);
         }
 
-        $payload = json_encode(['status' => 'ok', 'message' => 'Kolesa Academy!']);
-        $jsonResponse->getBody()->write($payload);
+        $validData = $validation->getValidData();
+        $size      = $validData['size'];
+        $cropping  = $validData['cropping'] ?? 0;
 
-        return $jsonResponse;
+        $resizer      = new Resizer($size, $cropping);
+        $resizedImage = $resizer->resize($validData['url']);
+
+        $response->getBody()->write($resizedImage->getImageBlob());
+
+        return $response->withHeader('Content-type', 'image/jpeg')->withStatus(200);
     }
 
     /**

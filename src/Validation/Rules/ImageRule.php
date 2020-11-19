@@ -25,7 +25,8 @@ class ImageRule extends Rule
      *
      * @var string
      */
-    protected $message = "Размер изображения должен быть меньше :max_size. Разрешенные типы файла - :allowed_types";
+    protected $message = ":attribute - Размер изображения должен быть меньше :max_size." .
+                         "Разрешенные типы файла - :allowed_types";
 
     /**
      * Устанавливает дефолтный максимальный размер изображения.
