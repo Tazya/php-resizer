@@ -124,8 +124,8 @@ class ImageRule extends Rule
         $maxSize                = $this->parameter('max_size');
         [$maxHeight, $maxWidth] = explode('x', $maxSize);
 
-        $isHeightCorrect = $height < (int) $maxHeight;
-        $isWidthCorrect  = $width < (int) $maxWidth;
+        $isHeightCorrect = $height <= (int) $maxHeight;
+        $isWidthCorrect  = $width <= (int) $maxWidth;
 
         return $isHeightCorrect && $isWidthCorrect;
     }

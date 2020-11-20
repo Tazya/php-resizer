@@ -52,7 +52,7 @@ class SizeBetweenRule extends Rule
         [$height, $width] = $sizes;
 
         // Проверка на то, что высота и ширина являются числами
-        if (!is_numeric($height) || !is_numeric($width)) {
+        if (!ctype_digit($height) || !ctype_digit($width)) {
             return false;
         }
 
