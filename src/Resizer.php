@@ -61,21 +61,16 @@ class Resizer
      */
     public function resize(string $url): Imagick
     {
-        $image     = new Imagick();
+        $image = new Imagick();
+        $image->readImageBlob(file_get_contents($url));
 
-        $imageContent = file_get_contents($url);
-        $image->readImageBlob($imageContent);
-
-        $cropping  = (bool) $this->cropping;
-
-        if ($cropping) {
+        if ((bool) $this->cropping) {
             $image->cropThumbnailImage($this->width, $this->height);
-            $newImage = $image;
-        } else {
-            $newImage = $this->createThumbnail($image);
+
+            return $image;
         }
 
-        return $newImage;
+        return $this->createThumbnail($image);
     }
 
     /**
@@ -100,22 +95,23 @@ class Resizer
             $newHeight = $this->height;
         }
 
-        $image->resizeImage($newWidth, $newHeight, Imagick::FILTER_UNDEFINED, 0.9);
+        $image->resizeImage($newWidth, $newHeight, Imagick::FILTER_POINT, 0.9);
 
-        $halfHeight = $image->getImageHeight() / 2;
-        $halfWidth  = $image->getImageWidth() / 2;
+        $thumbnail = new Imagick();
+        $thumbnail->newImage($this->width, $this->height, "white");
+        $thumbnail->setImageFormat($image->getImageFormat());
+        $thumbnail->setImageColorspace($image->getImageColorspace());
 
-        $background = new Imagick();
-        $background->newImage($this->width, $this->height, "white");
-        $background->setImageFormat('jpg');
+        $xLocation = round(($this->width / 2) - ($newWidth / 2));
+        $yLocation = round(($this->height / 2) - ($newHeight / 2));
 
-        $background->compositeImage(
+        $thumbnail->compositeImage(
             $image,
             imagick::COMPOSITE_DEFAULT,
-            $this->width / 2 - $halfWidth,
-            $this->height / 2 - $halfHeight
+            $xLocation,
+            $yLocation
         );
 
-        return $background;
+        return $thumbnail;
     }
 }
