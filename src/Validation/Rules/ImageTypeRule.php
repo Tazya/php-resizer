@@ -18,7 +18,7 @@ class ImageTypeRule extends Rule
      *
      * @var string
      */
-    protected $message = ":attribute - разрешенные типы файла - :allowed_types";
+    protected $message = ':attribute - разрешенные типы файла - :allowed_types';
 
     /**
      * Принимает параметры и записывает их в массив доступных типов.

@@ -17,7 +17,7 @@ class ImageSizeRule extends Rule
      *
      * @var string
      */
-    protected $message = ":attribute - Размер изображения должен быть меньше :max_size.";
+    protected $message = ':attribute - Размер изображения должен быть меньше :max_size.';
 
     /**
      * Список передаваемых параметров при использовании правила в валидаторе.
