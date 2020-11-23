@@ -3,6 +3,7 @@ namespace App\Validation;
 
 use App\Validation\Rules\ImageSizeRule;
 use App\Validation\Rules\ImageTypeRule;
+use App\Validation\Rules\NotFalseRule;
 use App\Validation\Rules\SizeBetweenRule;
 use Rakit\Validation\Validation;
 use Rakit\Validation\Validator as RakitValidator;
@@ -52,22 +53,24 @@ class Validator
      * Метод принимает файл изображения в виде строки и проверяет его на
      * соответствие максимальным размерам и разрешенным типам
      *
-     * @param  string     $imageFile
+     * @param  string|bool $imageFile
      * @return Validation
      */
-    public static function validateImage(string $imageFile): Validation
+    public static function validateImage($imageFile): Validation
     {
         $validator = new RakitValidator([
+            'image:fileExists'   => 'url - изображение не существует',
             'image:imageType'    => 'url - разрешенные типы файла - :allowed_types',
             'image:imageMaxSize' => 'url - размер изображения должен быть меньше или равен :max_size.',
         ]);
 
+        $validator->addValidator('fileExists', new NotFalseRule());
         $validator->addValidator('imageType', new ImageTypeRule());
         $validator->addValidator('imageMaxSize', new ImageSizeRule());
 
         $validation = $validator->make(
             ['image' => $imageFile],
-            ['image' => 'imageType:jpg,jpeg|imageMaxSize:2048x2048']
+            ['image' => 'fileExists|imageType:jpg,jpeg|imageMaxSize:2048x2048']
         );
 
         $validation->validate();

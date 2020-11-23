@@ -64,7 +64,7 @@ class ResizerController
             return ['error' => Validator::makeErrorMessage($validation)];
         }
 
-        $imageFile       = file_get_contents($rawData['url']);
+        $imageFile       = @file_get_contents($rawData['url']);
         $imageValidation = Validator::validateImage($imageFile);
 
         if ($imageValidation->fails()) {
