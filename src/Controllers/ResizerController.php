@@ -25,25 +25,58 @@ class ResizerController
      */
     public function __invoke(Request $request, Response $response): Response
     {
-        $rawData    = $request->getQueryParams();
-        $validation = Validator::validate($rawData);
+        $rawData      = $request->getQueryParams();
+        $preparedData = $this->prepareData($rawData);
 
-        if ($validation->fails()) {
-            $response->getBody()->write(Validator::makeErrorMessage($validation));
+        if (array_key_exists('error', $preparedData)) {
+            $response->getBody()->write($preparedData['error']);
 
             return $response->withHeader('Content-Type', 'application/json; charset=utf-8')
                 ->withStatus(400);
         }
 
-        $validData = $validation->getValidData();
-        $size      = $validData['size'];
-        $cropping  = $validData['cropping'] ?? 0;
+        $imageFile = $preparedData['image'];
+        $size      = $preparedData['size'];
+        $cropping  = $preparedData['cropping'] ?? 0;
 
         $resizer      = new Resizer($size, $cropping);
-        $resizedImage = $resizer->resize($validData['url']);
+        $resizedImage = $resizer->resize($imageFile);
 
         $response->getBody()->write($resizedImage->getImageBlob());
 
         return $response->withHeader('Content-type', 'image/jpeg')->withStatus(200);
+    }
+
+    /**
+     * Производит подготовку данных и возвращает массив,
+     * содержащий валидные данные для ресайза, файл изображения.
+     * В случае неудачи - вернет первую полученную ошибку в ключе 'error'.
+     * Ошибка возвращается в следующем порядке: url, size, cropping.
+     *
+     * @param  array $rawData
+     * @return array
+     */
+    private function prepareData(array $rawData): array
+    {
+        $validation = Validator::validate($rawData);
+
+        if ($validation->errors()->first('url')) {
+            return ['error' => Validator::makeErrorMessage($validation)];
+        }
+
+        $imageFile       = file_get_contents($rawData['url']);
+        $imageValidation = Validator::validateImage($imageFile);
+
+        if ($imageValidation->fails()) {
+            return ['error' => Validator::makeErrorMessage($imageValidation)];
+        }
+
+        if ($validation->fails()) {
+            return ['error' => Validator::makeErrorMessage($validation)];
+        }
+
+        $validData = $validation->getValidData();
+
+        return array_merge($validData, ['image' => $imageFile]);
     }
 }

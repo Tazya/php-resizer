@@ -65,16 +65,16 @@ class Resizer
     }
 
     /**
-     * Принимает путь к изображению и обрезает параметрам
-     * указанным в свойствах объекта
+     * Принимает файл изображения в виде строки
+     * и изменяет размер по параметрам, указанным в свойствах объекта.
      *
-     * @param  string  $url
+     * @param  string  $imageFile
      * @return Imagick
      */
-    public function resize(string $url): Imagick
+    public function resize(string $imageFile): Imagick
     {
         $image = new Imagick();
-        $image->readImageBlob(file_get_contents($url));
+        $image->readImageBlob($imageFile);
 
         if ($this->hasCropping()) {
             $image->cropThumbnailImage($this->getWidth(), $this->getHeight());

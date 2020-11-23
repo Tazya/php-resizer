@@ -1,7 +1,8 @@
 <?php
 namespace App\Validation;
 
-use App\Validation\Rules\ImageRule;
+use App\Validation\Rules\ImageSizeRule;
+use App\Validation\Rules\ImageTypeRule;
 use App\Validation\Rules\SizeBetweenRule;
 use Rakit\Validation\Validation;
 use Rakit\Validation\Validator as RakitValidator;
@@ -25,14 +26,11 @@ class Validator
         $validator = new RakitValidator([
             'url:required'     => 'url - не указан обязательный параметр',
             'url:url'          => 'url - должен быть валидным адресом',
-            'url:image'        => 'url - размер изображения должен быть меньше или равен :max_size. ' .
-                'Разрешенные типы файла - :allowed_types',
             'size:required'    => 'size - не указан обязательный параметр',
             'size:sizeBetween' => 'size - размер должен быть между :min и :max в формате 512x512 (высота x ширина)',
             'cropping:in'      => 'cropping - Значение обрезки изображения должно быть :allowed_values',
         ]);
 
-        $validator->addValidator('image', new ImageRule());
         $validator->addValidator('sizeBetween', new SizeBetweenRule());
 
         $validator->setTranslations([
@@ -40,10 +38,37 @@ class Validator
         ]);
 
         $validation = $validator->make($data, [
-            'url'      => 'required|url|image:jpg,jpeg',
+            'url'      => 'required|url',
             'size'     => 'required|sizeBetween:256x256,1024x1024',
             'cropping' => 'in:0,1',
         ]);
+
+        $validation->validate();
+
+        return $validation;
+    }
+
+    /**
+     * Метод принимает файл изображения в виде строки и проверяет его на
+     * соответствие максимальным размерам и разрешенным типам
+     *
+     * @param  string     $imageFile
+     * @return Validation
+     */
+    public static function validateImage(string $imageFile): Validation
+    {
+        $validator = new RakitValidator([
+            'image:imageType'    => 'url - разрешенные типы файла - :allowed_types',
+            'image:imageMaxSize' => 'url - размер изображения должен быть меньше или равен :max_size.',
+        ]);
+
+        $validator->addValidator('imageType', new ImageTypeRule());
+        $validator->addValidator('imageMaxSize', new ImageSizeRule());
+
+        $validation = $validator->make(
+            ['image' => $imageFile],
+            ['image' => 'imageType:jpg,jpeg|imageMaxSize:2048x2048']
+        );
 
         $validation->validate();
 
