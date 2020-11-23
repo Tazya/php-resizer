@@ -1,6 +1,7 @@
 <?php
 namespace App\Validation;
 
+use App\Validation\Rules\BackgroundRule;
 use App\Validation\Rules\ImageSizeRule;
 use App\Validation\Rules\ImageTypeRule;
 use App\Validation\Rules\NotFalseRule;
@@ -29,19 +30,22 @@ class Validator
             'url:url'          => 'url - должен быть валидным адресом',
             'size:required'    => 'size - не указан обязательный параметр',
             'size:sizeBetween' => 'size - размер должен быть между :min и :max в формате 512x512 (высота x ширина)',
-            'cropping:in'      => 'cropping - Значение обрезки изображения должно быть :allowed_values',
+            'cropping:in'      => 'cropping - значение обрезки изображения должно быть :allowed_values',
+            'background'       => 'background - цвет фона должен быть в формате RGB: 255,255,255',
         ]);
 
         $validator->addValidator('sizeBetween', new SizeBetweenRule());
+        $validator->addValidator('background', new BackgroundRule());
 
         $validator->setTranslations([
             'or' => 'или',
         ]);
 
         $validation = $validator->make($data, [
-            'url'      => 'required|url',
-            'size'     => 'required|sizeBetween:256x256,1024x1024',
-            'cropping' => 'in:0,1',
+            'url'        => 'required|url',
+            'size'       => 'required|sizeBetween:256x256,1024x1024',
+            'cropping'   => 'in:0,1',
+            'background' => 'background',
         ]);
 
         $validation->validate();

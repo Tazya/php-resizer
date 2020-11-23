@@ -35,11 +35,12 @@ class ResizerController
                 ->withStatus(400);
         }
 
-        $imageFile = $preparedData['image'];
-        $size      = $preparedData['size'];
-        $cropping  = $preparedData['cropping'] ?? 0;
+        $imageFile   = $preparedData['image'];
+        $size        = $preparedData['size'];
+        $cropping    = $preparedData['cropping'] ?? 0;
+        $background  = $preparedData['background'] ?? '255,255,255';
 
-        $resizer      = new Resizer($size, $cropping);
+        $resizer      = new Resizer($size, $cropping, $background);
         $resizedImage = $resizer->resize($imageFile);
 
         $response->getBody()->write($resizedImage->getImageBlob());
